@@ -1,0 +1,47 @@
+.table-view {
+    -fx-border-color: #cccccc;
+    -fx-border-width: 1;
+    -fx-background-color: white;
+}
+
+.button {
+    -fx-background-color: #4CAF50;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 8 15 8 15;
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
+}
+
+.button:hover {
+    -fx-background-color: #45a049;
+}
+
+.text-field {
+    -fx-border-color: #ccc;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+    -fx-padding: 6;
+}
+.button {
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+    -fx-padding: 8 16;
+}
+
+/* Specific button styles */
+#add-btn {
+    -fx-background-color: #4CAF50;
+}
+
+#update-btn {
+    -fx-background-color: #2196F3;
+}
+
+#delete-btn {
+    -fx-background-color: #f44336;
+}
+
+#clear-btn {
+    -fx-background-color: #9E9E9E;
+}

@@ -2,6 +2,7 @@ package yahaya.com.hospitalinformationsystem;
 
 import javafx.application.Application;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -19,6 +20,8 @@ public class PatientCRUDApp extends Application {
     private TextField addressField = new TextField();
     private TextField phoneField = new TextField();
 
+    private Label formErrorLabel = new Label(); // For showing validation errors
+
     private Connection conn;
 
     @Override
@@ -30,11 +33,15 @@ public class PatientCRUDApp extends Application {
         VBox form = buildForm();
         HBox buttons = buildButtons();
 
-        VBox layout = new VBox(10, table, form, buttons);
+        VBox layout = new VBox(15, table, formErrorLabel, form, buttons);
         layout.setPadding(new Insets(20));
+        layout.setStyle("-fx-background-color: #f9f9f9;");
 
-        primaryStage.setTitle("Patient Management");
-        primaryStage.setScene(new Scene(layout, 800, 500));
+        Scene scene = new Scene(layout, 850, 550);
+        scene.getStylesheets().add(getClass().getResource("/style.css").toExternalForm());
+
+        primaryStage.setTitle("Hospital Information System");
+        primaryStage.setScene(scene);
         primaryStage.show();
     }
 
@@ -59,21 +66,25 @@ public class PatientCRUDApp extends Application {
         phoneCol.setCellValueFactory(new PropertyValueFactory<>("phone"));
 
         table.getColumns().addAll(idCol, nameCol, surnameCol, addressCol, phoneCol);
+        table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
     }
 
     private VBox buildForm() {
         idField.setPromptText("ID");
+        idField.setDisable(true);
+
         nameField.setPromptText("Firstname");
         surnameField.setPromptText("Surname");
         addressField.setPromptText("Address");
         phoneField.setPromptText("Phone");
 
-        idField.setDisable(true);
+        formErrorLabel.setStyle("-fx-text-fill: red;");
 
         GridPane form = new GridPane();
         form.setHgap(10);
-        form.setVgap(10);
-        form.addRow(0, new Label("Name:"), nameField);
+        form.setVgap(12);
+        form.setPadding(new Insets(10));
+        form.addRow(0, new Label("Firstname:"), nameField);
         form.addRow(1, new Label("Surname:"), surnameField);
         form.addRow(2, new Label("Address:"), addressField);
         form.addRow(3, new Label("Phone:"), phoneField);
@@ -87,14 +98,46 @@ public class PatientCRUDApp extends Application {
         Button delete = new Button("Delete");
         Button clear = new Button("Clear");
 
-        add.setOnAction(e -> addPatient());
-        update.setOnAction(e -> updatePatient());
+        add.setId("add-btn");
+        update.setId("update-btn");
+        delete.setId("delete-btn");
+        clear.setId("clear-btn");
+
+        add.setOnAction(e -> {
+            if (validateForm()) addPatient();
+        });
+        update.setOnAction(e -> {
+            if (validateForm()) updatePatient();
+        });
         delete.setOnAction(e -> deletePatient());
         clear.setOnAction(e -> clearForm());
 
         table.setOnMouseClicked(e -> populateForm());
 
-        return new HBox(10, add, update, delete, clear);
+        HBox buttonBox = new HBox(10, add, update, delete, clear);
+        buttonBox.setAlignment(Pos.CENTER);
+        buttonBox.setPadding(new Insets(10));
+        return buttonBox;
+    }
+
+    private boolean validateForm() {
+        String name = nameField.getText().trim();
+        String surname = surnameField.getText().trim();
+        String address = addressField.getText().trim();
+        String phone = phoneField.getText().trim();
+
+        if (name.isEmpty() || surname.isEmpty() || address.isEmpty() || phone.isEmpty()) {
+            formErrorLabel.setText("All fields are required.");
+            return false;
+        }
+
+        if (!phone.matches("\\d+")) {
+            formErrorLabel.setText("Phone must contain only digits.");
+            return false;
+        }
+
+        formErrorLabel.setText("");
+        return true;
     }
 
     private void loadPatients() {
@@ -189,10 +232,10 @@ public class PatientCRUDApp extends Application {
         surnameField.clear();
         addressField.clear();
         phoneField.clear();
+        formErrorLabel.setText("");
     }
 
     private void showAlert(String title, String message) {
         new Alert(Alert.AlertType.ERROR, message, ButtonType.OK).showAndWait();
     }
 }
-
