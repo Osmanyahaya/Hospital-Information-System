@@ -20,7 +20,7 @@ public class PatientCRUDApp extends Application {
     private TextField addressField = new TextField();
     private TextField phoneField = new TextField();
 
-    private Label formErrorLabel = new Label(); // For showing validation errors
+    private Label formErrorLabel = new Label();
 
     private Connection conn;
 
